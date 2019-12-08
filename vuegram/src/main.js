@@ -15,5 +15,6 @@ fb.auth.onAuthStateChanged(user => {
       store,
       render: h => h(App)
     })
+    app.$mount('#app')
   }
 })
