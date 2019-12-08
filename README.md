@@ -6,7 +6,8 @@
 ## Core Features
 * state management using Vuex
 * routing using vue-router
-* authentication using firebase 
+* authentication using firebase
+* object storage using firestore
 
 ## Resources
 * https://savvyapps.com/blog/definitive-guide-building-web-app-vuejs-firebase 
