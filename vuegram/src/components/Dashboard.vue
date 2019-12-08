@@ -15,6 +15,16 @@
         </div>
       </div>
       <div class="col2">
+
+        <transition name="fade">
+          <div v-if="hiddenPosts.length" @click="showNewPosts" class="hidden-posts">
+            <p>
+              Click to show <span class="new-posts">{{ hiddenPosts.length }}</span>
+              new <span v-if="hiddenPosts.length > 1">posts</span><span v-else>post</span>
+            </p>
+
+          </div>
+        </transition>
         <div v-if="posts.length">
           <div :key="index" v-for="(post, index) in posts" class="post">
             <h5>{{ post.userName }}</h5>
@@ -68,6 +78,11 @@ export default {
       }).catch(err => {
         console.log(err)
       })
+    },
+    showNewPosts () {
+      let updatedPosts = this.hiddenPosts.concat(this.posts)
+      this.$store.commit('setHiddenPosts', null)
+      this.$store.commit('setPosts', updatedPosts)
     }
   },
   filters: {
