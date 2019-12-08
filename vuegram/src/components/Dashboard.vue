@@ -31,9 +31,9 @@
             <span>{{ post.createdOn | formatDate }}</span>
             <p>{{ post.content | trimLength }}</p>
             <ul>
-              <li><a>comments {{ posts.comments }}</a></li>
-              <li><a>likes {{ posts.likes}}</a></li>
-              <li><a>vie full post</a></li>
+              <li><a @click="openCommentModal(post)">comments {{ post.comments }}</a></li>
+              <li><a>likes {{ post.likes}}</a></li>
+              <li><a>view full post</a></li>
             </ul>
 
           </div>
@@ -43,6 +43,20 @@
         </div>
       </div>
     </section>
+
+    <!--    comment modal -->
+    <transition name="fade">
+      <div v-if="showCommentModal" class="c-modal">
+        <div class="c-container">
+          <a @click="closeCommentModal">X</a>
+          <form @submit.prevent>
+            <label for="c-textarea">add a comment</label>
+            <textarea id='c-textarea' v-model.trim="comment.content"/>
+            <button @click="addComment" :disabled="comment.content === ''" class="button">add comment</button>
+          </form>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -58,7 +72,14 @@ export default {
     return {
       post: {
         content: ''
-      }
+      },
+      comment: {
+        postId: '',
+        userId: '',
+        content: '',
+        postComments: 0
+      },
+      showCommentModal: false
     }
   },
   computed: {
@@ -83,6 +104,38 @@ export default {
       let updatedPosts = this.hiddenPosts.concat(this.posts)
       this.$store.commit('setHiddenPosts', null)
       this.$store.commit('setPosts', updatedPosts)
+    },
+    openCommentModal (post) {
+      this.comment.postId = post.id
+      this.comment.userId = post.userId
+      this.comment.postComments = post.comments
+      this.showCommentModal = true
+    },
+    closeCommentModal () {
+      this.comment.postId = ''
+      this.comment.userId = ''
+      this.comment.postComments = ''
+      this.showCommentModal = false
+    },
+    addComment () {
+      let postId = this.comment.postId
+      let postComments = this.comment.postComments
+
+      fb.commentsCollection.add({
+        createdOn: new Date(),
+        content: this.comment.content,
+        postId: postId,
+        userId: this.currentUser.uid,
+        userName: this.userProfile.name
+      }).then(doc => {
+        fb.postsCollection.doc(postId).update({
+          comments: postComments + 1
+        }).then(() => {
+          this.closeCommentModal()
+        })
+      }).catch(err => {
+        console.log(err)
+      })
     }
   },
   filters: {
