@@ -22,8 +22,6 @@ export default new Vuex.Store({
     clearData ({ commit }) {
       commit('setCurrentUser', null)
       commit('setUserProfile', {})
-      // commit('setPosts', null)
-      // commit('setHiddenPosts', null)
     }
   },
   mutations: {
